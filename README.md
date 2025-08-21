@@ -12,7 +12,7 @@
 
 ## 🛠️ 编译方法
 
-### 快速编译（推荐）
+### 🍎 macOS 编译
 ```bash
 # 给脚本执行权限
 chmod +x build.sh
@@ -21,24 +21,70 @@ chmod +x build.sh
 ./build.sh
 ```
 
-### 手动编译
-```bash
-# macOS
-go build -o click main.go system_clicker.go config.go logger.go
+### 🪟 Windows 编译
 
-# Windows
-GOOS=windows GOARCH=amd64 go build -o click.exe main.go system_clicker.go config.go logger.go
-
-
+#### 方法1：使用批处理脚本（推荐）
+```cmd
+# 直接运行批处理文件
+build.bat
 ```
+
+#### 方法2：手动编译
+```cmd
+# 设置环境变量
+set GOOS=windows
+set CGO_ENABLED=1
+
+# 编译（无控制台窗口）
+go build -ldflags="-H windowsgui -s -w" -o clicker.exe .
+```
+
+#### 方法3：PowerShell 编译
+```powershell
+# 设置环境变量
+$env:GOOS = "windows"
+$env:CGO_ENABLED = "1"
+
+# 编译（无控制台窗口）
+go build -ldflags="-H windowsgui -s -w" -o clicker.exe .
+```
+
+### 🔒 Windows 无控制台编译说明
+
+为了确保 Windows 程序完全以 GUI 模式运行（无控制台窗口），我们使用了以下编译参数：
+
+- `-H windowsgui`：设置程序为 Windows GUI 应用程序
+- `-s`：去除符号表，减小文件大小
+- `-w`：去除调试信息，进一步减小文件大小
+- `-extldflags=-static`：静态链接，避免依赖问题
+
+编译后的 `.exe` 文件将：
+- ✅ 完全隐藏控制台窗口
+- ✅ 以纯 GUI 模式运行
+- ✅ 文件大小更小
+- ✅ 无外部依赖
 
 ## 📱 使用方法
 
+### 🍎 macOS 使用
 1. **启动程序**：双击可执行文件或命令行运行
 2. **设置延迟**：调整点击间隔时间（毫秒）
 3. **绑定按键**：点击"绑定按键"按钮，按下要绑定的按键组合
 4. **开始连点**：点击"开始连续点击"或使用快捷键 Command+F
 5. **停止连点**：点击"停止连续点击"或使用快捷键 Command+G
+
+### 🪟 Windows 使用
+1. **启动程序**：双击 `.exe` 文件（无控制台窗口）
+2. **设置延迟**：调整点击间隔时间（毫秒）
+3. **绑定按键**：点击"绑定按键"按钮，按下要绑定的按键组合
+4. **开始连点**：点击"开始连续点击"或使用快捷键 Ctrl+F
+5. **停止连点**：点击"停止连续点击"或使用快捷键 Ctrl+G
+
+**Windows 特色功能**：
+- 🚫 完全无控制台窗口
+- 🖱️ 优化的鼠标点击处理
+- ⌨️ 改进的键盘事件处理
+- 🔒 静态链接，无外部依赖
 
 ## 🔑 支持的按键类型
 
@@ -64,6 +110,10 @@ GOOS=windows GOARCH=amd64 go build -o click.exe main.go system_clicker.go config
 
 1. **以管理员身份运行**：右键点击程序图标，选择"以管理员身份运行"
 2. **或设置程序属性**：右键 → 属性 → 兼容性 → 勾选"以管理员身份运行此程序"
+3. **UAC 设置**：如果遇到 UAC 提示，选择"是"允许程序运行
+4. **防火墙设置**：首次运行时，Windows 防火墙可能会询问，选择"允许访问"
+
+**注意**：Windows 版本的程序已优化为完全无控制台模式，运行时不会弹出任何命令行窗口。
 
 
 
@@ -113,7 +163,9 @@ click/
 ├── config.go            # 配置管理
 ├── logger.go            # 日志系统
 ├── bundle.go            # 字体嵌入
-├── build.sh             # 跨平台编译脚本
+├── build.sh             # macOS/Linux 编译脚本
+├── build.bat            # Windows 编译脚本
+├── config.json          # 配置文件
 ├── go.mod               # Go模块依赖
 └── README.md            # 项目说明
 ```
@@ -124,6 +176,7 @@ click/
 - **GUI框架**：Fyne v2
 - **全局监听**：gohook
 - **系统命令**：cliclick (macOS), PowerShell (Windows)
+- **Windows 优化**：无控制台模式编译，静态链接
 
 ## 📄 许可证
 
