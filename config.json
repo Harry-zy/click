@@ -11,8 +11,8 @@
       "stop": "Command+G"
     },
     "windows": {
-      "start": "Alt+F",
-      "stop": "Alt+G"
+      "start": "Control+F",
+      "stop": "Control+G"
     }
   },
   "ui": {

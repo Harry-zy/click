@@ -79,8 +79,8 @@ func createDefaultConfig() *Config {
 				Stop:  "Command+G",
 			},
 			"windows": {
-				Start: "Alt+F",
-				Stop:  "Alt+G",
+				Start: "Control+F",
+				Stop:  "Control+G",
 			},
 			"linux": {
 				Start: "Alt+F",
