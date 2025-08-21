@@ -452,8 +452,8 @@ func (sc *SystemClicker) getWindowsCommand() *exec.Cmd {
 		default:
 			psScript = `[System.Windows.Forms.Cursor]::Position = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.SendKeys]::SendWait("{LEFT}")`
 		}
-		// 使用 -WindowStyle Hidden 和 -NoProfile 隐藏 PowerShell 窗口
-		return exec.Command("powershell", "-WindowStyle", "Hidden", "-NoProfile", "-NonInteractive", "-Command", psScript)
+		// 使用简单的 PowerShell 命令，保持控制台可见
+		return exec.Command("powershell", "-Command", psScript)
 	} else {
 		// 键盘按键
 		return sc.getWindowsKeyCommand()
@@ -562,9 +562,9 @@ func (sc *SystemClicker) getWindowsKeyCommand() *exec.Cmd {
 		key = sc.boundKeys
 	}
 
-	// 使用 PowerShell 执行键盘按键，隐藏窗口
+	// 使用 PowerShell 执行键盘按键
 	psScript := fmt.Sprintf(`Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait("%s")`, key)
-	return exec.Command("powershell", "-WindowStyle", "Hidden", "-NoProfile", "-NonInteractive", "-Command", psScript)
+	return exec.Command("powershell", "-Command", psScript)
 }
 
 // Linux 键盘按键命令

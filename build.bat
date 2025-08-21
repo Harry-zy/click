@@ -33,17 +33,17 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     set GOARCH=amd64
 )
 
-:: Set environment variables - ensure no console window
+:: Set environment variables - keep console window visible
 echo Setting build environment...
 set GOOS=windows
 set CGO_ENABLED=1
 
-:: Build project - use console hiding parameters
+:: Build project - keep console window
 echo Starting Windows build...
 echo Target system: Windows (%GOARCH%)
-echo Using console hiding parameters...
+echo Keeping console window visible...
 
-go build -ldflags="-H windowsgui -s -w" -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
+go build -ldflags="-s -w" -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
 
 if %ERRORLEVEL% EQU 0 (
     echo Windows build completed successfully
@@ -64,6 +64,6 @@ echo.
 echo Usage instructions:
 echo    - Run program: .\dist\clicker_win_%GOARCH%.exe
 echo    - Hotkeys: Ctrl+F to start, Ctrl+G to stop
-echo    - Program will run in pure GUI mode, no console window
+echo    - Program will show console window and keep it visible
 echo.
 pause
