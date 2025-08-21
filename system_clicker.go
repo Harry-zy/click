@@ -19,9 +19,15 @@ const (
 	SHIFT     = 56
 	CAPS_LOCK = 57
 	OPTION    = 58
-	CTRL      = 59
+	CTRL      = 59 // macOS/Linux 的 Control 键
 	CTRL_ALT1 = 60
 	CTRL_ALT2 = 61
+
+	// Windows 系统的 Control 键
+	CTRL_WIN = 162
+
+	// Windows 系统的 Alt 键
+	ALT_WIN = 164
 
 	// 主键 rawcode
 	KEY_A      = 0
@@ -200,9 +206,9 @@ func getModifierKeyNameByRawcode(rawcode uint16) string {
 		return "Shift"
 	case CAPS_LOCK:
 		return "CapsLock"
-	case OPTION:
+	case OPTION, ALT_WIN:
 		return getModifierKeyName("alt")
-	case CTRL, CTRL_ALT1, CTRL_ALT2:
+	case CTRL, CTRL_ALT1, CTRL_ALT2, CTRL_WIN:
 		return "Control"
 	default:
 		return fmt.Sprintf("Mod%d", rawcode)
@@ -756,14 +762,14 @@ func (sc *SystemClicker) StartHotkeyListener() {
 				// 根据操作系统使用不同的快捷键
 				if runtime.GOOS == "windows" {
 					// Windows: Ctrl+F 开始连续点击
-					if ev.Rawcode == 70 && (modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
+					if ev.Rawcode == 70 && (modifierKeys[CTRL_WIN] || modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
 						if !sc.isRunning {
 							fmt.Println("检测到快捷键 Ctrl+F，开始连续点击")
 							sc.StartClicking()
 						}
 					}
 					// Windows: Ctrl+G 停止连续点击
-					if ev.Rawcode == 71 && (modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
+					if ev.Rawcode == 71 && (modifierKeys[CTRL_WIN] || modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
 						if sc.isRunning {
 							fmt.Println("检测到快捷键 Ctrl+G，停止连续点击")
 							sc.StopClicking()
@@ -818,10 +824,10 @@ func (sc *SystemClicker) recordKeyPress(ev hook.Event) {
 	case CAPS_LOCK:
 		isModifier = true
 		modifierName = "CapsLock"
-	case OPTION:
+	case OPTION, ALT_WIN:
 		isModifier = true
 		modifierName = getModifierKeyName("alt")
-	case CTRL, CTRL_ALT1, CTRL_ALT2:
+	case CTRL, CTRL_ALT1, CTRL_ALT2, CTRL_WIN:
 		isModifier = true
 		modifierName = "Control"
 	}
