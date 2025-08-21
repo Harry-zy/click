@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo Continuous Clicker - Windows Build Script
-echo ========================================
+echo ==========================================
 
 :: Project root directory
 set ROOT_DIR=%~dp0
@@ -37,15 +37,13 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
 echo Setting build environment...
 set GOOS=windows
 set CGO_ENABLED=1
-set GOFLAGS=-trimpath
-set CGO_LDFLAGS=-static
 
-:: Build project - use strongest console hiding parameters
+:: Build project - use console hiding parameters
 echo Starting Windows build...
 echo Target system: Windows (%GOARCH%)
-echo Using strongest console hiding parameters...
+echo Using console hiding parameters...
 
-go build -ldflags="-H windowsgui -s -w -extldflags=-static" -buildmode=exe -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
+go build -ldflags="-H windowsgui -s -w" -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
 
 if %ERRORLEVEL% EQU 0 (
     echo Windows build completed successfully

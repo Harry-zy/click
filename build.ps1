@@ -15,7 +15,7 @@ New-Item -ItemType Directory -Name "dist" | Out-Null
 # Build command
 Write-Host "Building Windows executable..." -ForegroundColor Yellow
 try {
-    go build -ldflags="-H windowsgui" -o "dist\clicker.exe" .
+    go build -ldflags="-H windowsgui -s -w" -o "dist\clicker.exe" .
     if ($LASTEXITCODE -eq 0) {
         Write-Host "Build successful!" -ForegroundColor Green
         Write-Host "Output: dist\clicker.exe" -ForegroundColor Green
@@ -31,5 +31,10 @@ try {
     Write-Host "Build error: $_" -ForegroundColor Red
 }
 
+Write-Host ""
+Write-Host "Usage instructions:" -ForegroundColor Yellow
+Write-Host "  - Run program: .\dist\clicker.exe" -ForegroundColor White
+Write-Host "  - Hotkeys: Ctrl+F to start, Ctrl+G to stop" -ForegroundColor White
+Write-Host "  - Program runs in pure GUI mode, no console window" -ForegroundColor White
 Write-Host ""
 Read-Host "Press Enter to continue"

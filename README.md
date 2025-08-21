@@ -23,46 +23,79 @@ chmod +x build.sh
 
 ### 🪟 Windows 编译
 
-#### 方法1：使用批处理脚本（推荐）
-```cmd
-# 直接运行批处理文件
-build.bat
-```
-
-#### 方法2：手动编译
-```cmd
-# 设置环境变量
-set GOOS=windows
-set CGO_ENABLED=1
-
-# 编译（无控制台窗口）
-go build -ldflags="-H windowsgui -s -w" -o clicker.exe .
-```
-
-#### 方法3：PowerShell 编译
+#### 方法1：PowerShell 脚本（推荐）
 ```powershell
-# 设置环境变量
-$env:GOOS = "windows"
-$env:CGO_ENABLED = "1"
+# 如果遇到执行策略问题，先运行：
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
-# 编译（无控制台窗口）
+# 然后运行脚本：
+.\build.ps1
+```
+
+#### 方法2：批处理脚本
+```cmd
+# 完整编译脚本
+build.bat
+
+# 或简化脚本
+build_simple.bat
+```
+
+#### 方法3：手动编译
+```cmd
+# 命令提示符中：
+go build -ldflags="-H windowsgui -s -w" -o clicker.exe .
+
+# PowerShell 中：
 go build -ldflags="-H windowsgui -s -w" -o clicker.exe .
 ```
 
-### 🔒 Windows 无控制台编译说明
+### 🔒 Windows 编译参数说明
 
 为了确保 Windows 程序完全以 GUI 模式运行（无控制台窗口），我们使用了以下编译参数：
 
 - `-H windowsgui`：设置程序为 Windows GUI 应用程序
 - `-s`：去除符号表，减小文件大小
 - `-w`：去除调试信息，进一步减小文件大小
-- `-extldflags=-static`：静态链接，避免依赖问题
 
 编译后的 `.exe` 文件将：
 - ✅ 完全隐藏控制台窗口
 - ✅ 以纯 GUI 模式运行
 - ✅ 文件大小更小
 - ✅ 无外部依赖
+
+### 🔧 Windows 编译故障排除
+
+#### 如果编译卡住：
+1. 按 `Ctrl+C` 中断编译
+2. 尝试使用 `build_simple.bat`
+3. 或者直接手动编译
+
+#### 如果出现权限错误：
+1. 以管理员身份运行命令提示符
+2. 或者右键脚本选择"以管理员身份运行"
+
+#### 如果 PowerShell 被禁用：
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### 如果 Go 命令未找到：
+1. 确保已安装 Go
+2. 运行 `go version` 检查
+3. 检查环境变量 PATH 是否包含 Go 路径
+
+### 📱 Windows 编译输出
+
+编译成功后会生成：
+- `dist\clicker_win_amd64.exe` (使用 build.bat)
+- `dist\clicker.exe` (使用其他方法)
+
+程序特点：
+- 🚫 完全无控制台窗口（启动时和运行时）
+- 🖱️ 优化的鼠标点击处理
+- ⌨️ 改进的键盘事件处理
+- 🔒 静态链接，无外部依赖
 
 ## 📱 使用方法
 
@@ -164,7 +197,9 @@ click/
 ├── logger.go            # 日志系统
 ├── bundle.go            # 字体嵌入
 ├── build.sh             # macOS/Linux 编译脚本
-├── build.bat            # Windows 编译脚本
+├── build.bat            # Windows 完整编译脚本
+├── build.ps1            # Windows PowerShell 编译脚本
+├── build_simple.bat     # Windows 简化编译脚本
 ├── config.json          # 配置文件
 ├── go.mod               # Go模块依赖
 └── README.md            # 项目说明
