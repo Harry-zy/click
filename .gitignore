@@ -1,0 +1,19 @@
+# 编译输出
+*.exe
+*.app
+dist/
+bin/
+
+# 日志文件
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 临时文件
+__MACOSX/
+*.tmp
+
+# Go 缓存
+go.sum

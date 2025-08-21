@@ -1,0 +1,27 @@
+{
+  "default_delay": 1500,
+  "default_click_type": "右键",
+  "hotkeys": {
+    "linux": {
+      "start": "Alt+F",
+      "stop": "Alt+G"
+    },
+    "macos": {
+      "start": "Command+F",
+      "stop": "Command+G"
+    },
+    "windows": {
+      "start": "Alt+F",
+      "stop": "Alt+G"
+    }
+  },
+  "ui": {
+    "window_width": 400,
+    "window_height": 500,
+    "theme": "light"
+  },
+  "logging": {
+    "enabled": true,
+    "level": "info"
+  }
+}
