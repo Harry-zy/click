@@ -29,6 +29,14 @@ const (
 	// Windows 系统的 Alt 键
 	ALT_WIN = 164
 
+	// Windows API 常量
+	MOUSEEVENTF_LEFTDOWN   = 0x0002
+	MOUSEEVENTF_LEFTUP     = 0x0004
+	MOUSEEVENTF_RIGHTDOWN  = 0x0008
+	MOUSEEVENTF_RIGHTUP    = 0x0010
+	MOUSEEVENTF_MIDDLEDOWN = 0x0020
+	MOUSEEVENTF_MIDDLEUP   = 0x0040
+
 	// 主键 rawcode
 	KEY_A      = 0
 	KEY_S      = 1
@@ -57,6 +65,8 @@ const (
 	KEY_LEFT   = 123
 	KEY_RIGHT  = 124
 )
+
+// Windows 鼠标点击函数 - 已移除，使用 PowerShell 实现
 
 // 根据操作系统返回正确的按键名称
 func getModifierKeyName(keyType string) string {
