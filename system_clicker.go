@@ -440,17 +440,73 @@ func (sc *SystemClicker) getMacOSCommand() *exec.Cmd {
 func (sc *SystemClicker) getWindowsCommand() *exec.Cmd {
 	// 智能判断绑定的按键类型并执行相应命令
 	if strings.Contains(sc.boundKeys, "左键") || strings.Contains(sc.boundKeys, "右键") || strings.Contains(sc.boundKeys, "中键") {
-		// 鼠标点击 - 使用更简单的 PowerShell 命令，减少弹窗
+		// 鼠标点击 - 使用 Windows API 的 mouse_event 函数
 		var psScript string
 		switch sc.boundKeys {
 		case "左键":
-			psScript = `[System.Windows.Forms.Cursor]::Position = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.SendKeys]::SendWait("{LEFT}")`
+			psScript = `
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
+    
+    public const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
+    public const uint MOUSEEVENTF_LEFTUP = 0x0004;
+}
+"@
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, [UIntPtr]::Zero)
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_LEFTUP, 0, 0, 0, [UIntPtr]::Zero)
+`
 		case "右键":
-			psScript = `[System.Windows.Forms.Cursor]::Position = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.SendKeys]::SendWait("{RIGHT}")`
+			psScript = `
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
+    
+    public const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+    public const uint MOUSEEVENTF_RIGHTUP = 0x0010;
+}
+"@
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, [UIntPtr]::Zero)
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_RIGHTUP, 0, 0, 0, [UIntPtr]::Zero)
+`
 		case "中键":
-			psScript = `[System.Windows.Forms.Cursor]::Position = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.SendKeys]::SendWait("{MIDDLE}")`
+			psScript = `
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
+    
+    public const uint MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+    public const uint MOUSEEVENTF_MIDDLEUP = 0x0040;
+}
+"@
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_MIDDLEDOWN, 0, 0, 0, [UIntPtr]::Zero)
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_MIDDLEUP, 0, 0, 0, [UIntPtr]::Zero)
+`
 		default:
-			psScript = `[System.Windows.Forms.Cursor]::Position = [System.Windows.Forms.Cursor]::Position; [System.Windows.Forms.SendKeys]::SendWait("{LEFT}")`
+			psScript = `
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public class Win32 {
+    [DllImport("user32.dll")]
+    public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, UIntPtr dwExtraInfo);
+    
+    public const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
+    public const uint MOUSEEVENTF_LEFTUP = 0x0004;
+}
+"@
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_LEFTDOWN, 0, 0, 0, [UIntPtr]::Zero)
+[Win32]::mouse_event([Win32]::MOUSEEVENTF_LEFTUP, 0, 0, 0, [UIntPtr]::Zero)
+`
 		}
 		// 使用简单的 PowerShell 命令，保持控制台可见
 		return exec.Command("powershell", "-Command", psScript)
