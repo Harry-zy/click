@@ -47,7 +47,10 @@ func init() {
 	var err error
 	config, err = LoadConfig()
 	if err != nil {
-		fmt.Printf("加载配置失败: %v，使用默认配置\n", err)
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Printf("加载配置失败: %v，使用默认配置\n", err)
+		}
 		config = createDefaultConfig()
 	}
 
@@ -65,7 +68,10 @@ func main() {
 	// 使用嵌入字体
 	fontResource := fyne.NewStaticResource("SourceHanSansSC-Bold", SourceHanSansSCBold)
 	a.Settings().SetTheme(&myTheme{font: fontResource})
-	log.Println("已加载中文字体")
+	// Windows 系统下不显示控制台日志
+	if runtime.GOOS != "windows" {
+		log.Println("已加载中文字体")
+	}
 
 	runMainApplication(a)
 }

@@ -33,16 +33,19 @@ if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
     set GOARCH=amd64
 )
 
-:: 设置环境变量
+:: 设置环境变量 - 确保完全避免控制台窗口
 echo 🔧 设置编译环境...
 set GOOS=windows
 set CGO_ENABLED=1
+set GOFLAGS=-trimpath
+set CGO_LDFLAGS=-static
 
-:: 编译项目
+:: 编译项目 - 使用最强的控制台隐藏参数
 echo 🚀 开始编译 Windows 版本...
 echo 📱 目标系统: Windows (%GOARCH%)
+echo 🔒 使用最强控制台隐藏参数...
 
-go build -ldflags="-H windowsgui -s -w" -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
+go build -ldflags="-H windowsgui -s -w -extldflags=-static" -buildmode=exe -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
 
 if %ERRORLEVEL% EQU 0 (
     echo ✅ Windows 版本编译完成
@@ -63,5 +66,6 @@ echo.
 echo 💡 使用说明：
 echo    - 运行程序: .\dist\clicker_win_%GOARCH%.exe
 echo    - 快捷键: Ctrl+F 开始，Ctrl+G 停止
+echo    - 程序将以纯GUI模式运行，无控制台窗口
 echo.
 pause

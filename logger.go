@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"time"
 )
 
@@ -26,7 +27,10 @@ func NewLogger(enabled bool, level string) *Logger {
 		// 创建日志文件
 		logFile, err := os.OpenFile("clicker.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
-			fmt.Printf("创建日志文件失败: %v\n", err)
+			// Windows 系统下不显示控制台日志
+			if runtime.GOOS != "windows" {
+				fmt.Printf("创建日志文件失败: %v\n", err)
+			}
 			return logger
 		}
 
