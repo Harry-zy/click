@@ -1,71 +1,71 @@
 @echo off
 chcp 65001 >nul
-echo 🚀 连续点击器 - Windows 快速构建脚本
-echo ================================
+echo Continuous Clicker - Windows Build Script
+echo ========================================
 
-:: 项目根目录
+:: Project root directory
 set ROOT_DIR=%~dp0
 set DIST_DIR=%ROOT_DIR%dist
 set FONT_FILE=%ROOT_DIR%SourceHanSansSC-Bold.otf
 
-:: 输出清理
-echo 🧹 清理旧的 dist 目录...
+:: Clean output directory
+echo Cleaning old dist directory...
 if exist "%DIST_DIR%" rmdir /s /q "%DIST_DIR%"
 mkdir "%DIST_DIR%"
 
-:: 检查字体文件
+:: Check font file
 if exist "%FONT_FILE%" (
-    echo ✅ 字体文件存在: %FONT_FILE%
+    echo Font file found: %FONT_FILE%
 ) else (
-    echo ⚠️ 字体文件未找到: %FONT_FILE%
+    echo Font file not found: %FONT_FILE%
 )
 
-:: 检测当前架构
-echo 🔍 检测系统架构...
+:: Detect current architecture
+echo Detecting system architecture...
 if "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
-    echo 🖥️ 检测到 AMD64 架构
+    echo Detected AMD64 architecture
     set GOARCH=amd64
 ) else if "%PROCESSOR_ARCHITECTURE%"=="ARM64" (
-    echo 🖥️ 检测到 ARM64 架构
+    echo Detected ARM64 architecture
     set GOARCH=arm64
 ) else (
-    echo 🖥️ 检测到 %PROCESSOR_ARCHITECTURE% 架构
+    echo Detected %PROCESSOR_ARCHITECTURE% architecture
     set GOARCH=amd64
 )
 
-:: 设置环境变量 - 确保完全避免控制台窗口
-echo 🔧 设置编译环境...
+:: Set environment variables - ensure no console window
+echo Setting build environment...
 set GOOS=windows
 set CGO_ENABLED=1
 set GOFLAGS=-trimpath
 set CGO_LDFLAGS=-static
 
-:: 编译项目 - 使用最强的控制台隐藏参数
-echo 🚀 开始编译 Windows 版本...
-echo 📱 目标系统: Windows (%GOARCH%)
-echo 🔒 使用最强控制台隐藏参数...
+:: Build project - use strongest console hiding parameters
+echo Starting Windows build...
+echo Target system: Windows (%GOARCH%)
+echo Using strongest console hiding parameters...
 
 go build -ldflags="-H windowsgui -s -w -extldflags=-static" -buildmode=exe -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
 
 if %ERRORLEVEL% EQU 0 (
-    echo ✅ Windows 版本编译完成
+    echo Windows build completed successfully
 ) else (
-    echo ❌ 编译失败，错误代码: %ERRORLEVEL%
+    echo Build failed with error code: %ERRORLEVEL%
     pause
     exit /b %ERRORLEVEL%
 )
 
 echo.
-echo ✅ 构建完成！
-echo 📁 输出目录: %DIST_DIR%
+echo Build completed!
+echo Output directory: %DIST_DIR%
 echo.
-echo 📝 生成的文件：
+echo Generated files:
 dir "%DIST_DIR%"
 
 echo.
-echo 💡 使用说明：
-echo    - 运行程序: .\dist\clicker_win_%GOARCH%.exe
-echo    - 快捷键: Ctrl+F 开始，Ctrl+G 停止
-echo    - 程序将以纯GUI模式运行，无控制台窗口
+echo Usage instructions:
+echo    - Run program: .\dist\clicker_win_%GOARCH%.exe
+echo    - Hotkeys: Ctrl+F to start, Ctrl+G to stop
+echo    - Program will run in pure GUI mode, no console window
 echo.
 pause
