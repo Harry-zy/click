@@ -268,6 +268,7 @@ type SystemClicker struct {
 	totalClicks         int
 	isBinding           bool        // 是否正在绑定按键
 	bindingCompleteChan chan string // 按键绑定完成通知通道
+	stateChangeChan     chan bool   // 状态变化通知通道
 
 	// 组合键绑定相关
 	modifierKeys map[uint16]bool // 当前按下的修饰键
@@ -285,6 +286,7 @@ func NewSystemClicker() *SystemClicker {
 		totalClicks:         0,
 		isBinding:           false,
 		bindingCompleteChan: make(chan string, 1),
+		stateChangeChan:     make(chan bool, 1),
 
 		// 初始化组合键绑定相关字段
 		modifierKeys: make(map[uint16]bool),
@@ -301,6 +303,12 @@ func (sc *SystemClicker) StartClicking() {
 	sc.stopChan = make(chan bool)
 	sc.startTime = time.Now()
 	sc.totalClicks = 0
+
+	// 发送状态变化通知
+	select {
+	case sc.stateChangeChan <- true:
+	default:
+	}
 
 	// 记录开始日志
 	if sc.logger != nil {
@@ -329,6 +337,12 @@ func (sc *SystemClicker) StopClicking() {
 	sc.isRunning = false
 	close(sc.stopChan)
 
+	// 发送状态变化通知
+	select {
+	case sc.stateChangeChan <- false:
+	default:
+	}
+
 	// 记录停止日志
 	if sc.logger != nil {
 		duration := time.Since(sc.startTime)
@@ -352,6 +366,10 @@ func (sc *SystemClicker) performAction() {
 	case "darwin":
 		cmd = sc.getMacOSCommand()
 	case "windows":
+		// Windows 系统下，如果没有绑定按键，不执行任何操作
+		if sc.boundKeys == "未绑定" {
+			return
+		}
 		cmd = sc.getWindowsCommand()
 	case "linux":
 		cmd = sc.getLinuxCommand()
@@ -719,6 +737,11 @@ func (sc *SystemClicker) StartBinding() {
 // 获取绑定完成通道
 func (sc *SystemClicker) GetBindingCompleteChan() <-chan string {
 	return sc.bindingCompleteChan
+}
+
+// 获取状态变化通道
+func (sc *SystemClicker) GetStateChangeChan() <-chan bool {
+	return sc.stateChangeChan
 }
 
 // 停止绑定按键

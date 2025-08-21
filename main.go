@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image/color"
 	"log"
+	"runtime"
 	"strconv"
 	"time"
 
@@ -124,14 +125,38 @@ func runMainApplication(a fyne.App) {
 
 	startButton := widget.NewButton("开始连续点击", func() {
 		clicker.StartClicking()
+		// 只更新状态标签，不直接操作按钮
 		statusLabel.SetText("状态: 运行中")
 	})
 	stopButton := widget.NewButton("停止连续点击", func() {
 		clicker.StopClicking()
+		// 只更新状态标签，不直接操作按钮
 		statusLabel.SetText("状态: 未运行")
 	})
 
+	// 创建统一的状态更新函数，通过面板状态控制按钮
+	updateButtonStates := func(isRunning bool) {
+		if isRunning {
+			statusLabel.SetText("状态: 运行中")
+			startButton.Disable()
+			stopButton.Enable()
+			bindKeyButton.Disable() // 运行时禁用重新绑定按钮
+		} else {
+			statusLabel.SetText("状态: 未运行")
+			startButton.Enable()
+			stopButton.Disable()
+			bindKeyButton.Enable() // 停止时启用重新绑定按钮
+		}
+	}
+
+	// 初始化时设置停止按钮为不可用状态
+	stopButton.Disable()
+
 	testButton := widget.NewButton("测试点击", func() {
+		// Windows 系统下，如果没有绑定按键，不执行任何操作
+		if runtime.GOOS == "windows" && clicker.GetBoundKeys() == "未绑定" {
+			return
+		}
 		clicker.performAction()
 	})
 
@@ -173,6 +198,17 @@ func runMainApplication(a fyne.App) {
 
 		// 启动快捷键监听器
 		clicker.StartHotkeyListener()
+	}()
+
+	// 启动状态变化监听器
+	go func() {
+		for {
+			select {
+			case isRunning := <-clicker.GetStateChangeChan():
+				// 在主线程中更新界面状态
+				updateButtonStates(isRunning)
+			}
+		}
 	}()
 
 	w.ShowAndRun()
