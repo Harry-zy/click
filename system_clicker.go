@@ -338,7 +338,10 @@ func (sc *SystemClicker) StopClicking() {
 
 func (sc *SystemClicker) performAction() {
 	if sc.boundKeys == "未绑定" {
-		fmt.Println("未绑定任何按键，请先绑定按键")
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Println("未绑定任何按键，请先绑定按键")
+		}
 		return
 	}
 
@@ -353,7 +356,10 @@ func (sc *SystemClicker) performAction() {
 	case "linux":
 		cmd = sc.getLinuxCommand()
 	default:
-		fmt.Printf("不支持的操作系统: %s\n", runtime.GOOS)
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Printf("不支持的操作系统: %s\n", runtime.GOOS)
+		}
 		return
 	}
 
@@ -361,13 +367,19 @@ func (sc *SystemClicker) performAction() {
 		// 执行命令
 		err := cmd.Run()
 		if err != nil {
-			fmt.Printf("执行按键 %s 失败: %v\n", sc.boundKeys, err)
+			// Windows 系统下不显示控制台日志
+			if runtime.GOOS != "windows" {
+				fmt.Printf("执行按键 %s 失败: %v\n", sc.boundKeys, err)
+			}
 			if sc.logger != nil {
 				sc.logger.LogError("执行按键 %s 失败: %v", sc.boundKeys, err)
 			}
 		} else {
 			// 命令成功执行
-			fmt.Printf("执行按键 %s 成功，延迟: %dms\n", sc.boundKeys, sc.delay)
+			// Windows 系统下不显示控制台日志
+			if runtime.GOOS != "windows" {
+				fmt.Printf("执行按键 %s 成功，延迟: %dms\n", sc.boundKeys, sc.delay)
+			}
 			if sc.logger != nil {
 				sc.logger.LogClick(sc.boundKeys, sc.delay, time.Now())
 			}
@@ -698,7 +710,10 @@ func (sc *SystemClicker) StartBinding() {
 	sc.isBinding = true
 	sc.modifierKeys = make(map[uint16]bool)
 	sc.lastMainKey = 0
-	fmt.Println("请按下要绑定的按键组合...")
+	// Windows 系统下不显示控制台日志
+	if runtime.GOOS != "windows" {
+		fmt.Println("请按下要绑定的按键组合...")
+	}
 }
 
 // 获取绑定完成通道
@@ -764,14 +779,20 @@ func (sc *SystemClicker) StartHotkeyListener() {
 					// Windows: Ctrl+F 开始连续点击
 					if ev.Rawcode == 70 && (modifierKeys[CTRL_WIN] || modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
 						if !sc.isRunning {
-							fmt.Println("检测到快捷键 Ctrl+F，开始连续点击")
+							// Windows 系统下不显示控制台日志
+							if runtime.GOOS != "windows" {
+								fmt.Println("检测到快捷键 Ctrl+F，开始连续点击")
+							}
 							sc.StartClicking()
 						}
 					}
 					// Windows: Ctrl+G 停止连续点击
 					if ev.Rawcode == 71 && (modifierKeys[CTRL_WIN] || modifierKeys[CTRL] || modifierKeys[CTRL_ALT1] || modifierKeys[CTRL_ALT2]) {
 						if sc.isRunning {
-							fmt.Println("检测到快捷键 Ctrl+G，停止连续点击")
+							// Windows 系统下不显示控制台日志
+							if runtime.GOOS != "windows" {
+								fmt.Println("检测到快捷键 Ctrl+G，停止连续点击")
+							}
 							sc.StopClicking()
 						}
 					}
@@ -835,7 +856,10 @@ func (sc *SystemClicker) recordKeyPress(ev hook.Event) {
 	if isModifier {
 		// 记录修饰键
 		sc.modifierKeys[ev.Rawcode] = true
-		fmt.Printf("记录修饰键: %s\n", modifierName)
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Printf("记录修饰键: %s\n", modifierName)
+		}
 	} else {
 		// 记录主键，但不立即完成绑定
 		var keyName string
@@ -848,7 +872,10 @@ func (sc *SystemClicker) recordKeyPress(ev hook.Event) {
 
 		// 完成绑定
 		sc.isBinding = false
-		fmt.Printf("组合键绑定完成: %s\n", sc.boundKeys)
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Printf("组合键绑定完成: %s\n", sc.boundKeys)
+		}
 
 		// 通知主线程更新界面（通过通道）
 		if sc.bindingCompleteChan != nil {
@@ -876,7 +903,10 @@ func (sc *SystemClicker) recordMousePress(ev hook.Event) {
 
 	// 完成绑定
 	sc.isBinding = false
-	fmt.Printf("鼠标绑定完成: %s\n", sc.boundKeys)
+	// Windows 系统下不显示控制台日志
+	if runtime.GOOS != "windows" {
+		fmt.Printf("鼠标绑定完成: %s\n", sc.boundKeys)
+	}
 
 	// 通知主线程更新界面（通过通道）
 	if sc.bindingCompleteChan != nil {
@@ -907,7 +937,10 @@ func (sc *SystemClicker) checkKeyBindingComplete(ev hook.Event) {
 
 		// 完成绑定
 		sc.isBinding = false
-		fmt.Printf("组合键绑定完成: %s\n", sc.boundKeys)
+		// Windows 系统下不显示控制台日志
+		if runtime.GOOS != "windows" {
+			fmt.Printf("组合键绑定完成: %s\n", sc.boundKeys)
+		}
 
 		// 通知主线程更新界面（通过通道）
 		if sc.bindingCompleteChan != nil {

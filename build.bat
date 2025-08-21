@@ -42,7 +42,7 @@ set CGO_ENABLED=1
 echo 🚀 开始编译 Windows 版本...
 echo 📱 目标系统: Windows (%GOARCH%)
 
-go build -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
+go build -ldflags="-H windowsgui" -o "%DIST_DIR%\clicker_win_%GOARCH%.exe" .
 
 if %ERRORLEVEL% EQU 0 (
     echo ✅ Windows 版本编译完成
